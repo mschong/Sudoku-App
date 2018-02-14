@@ -94,7 +94,6 @@ public class BoardView extends View {
         canvas.translate(transX, transY);
         if (board != null) {
             drawGrid(canvas);
-            //drawBorder(canvas);
             drawSquares(canvas);
         }
         canvas.translate(-transX, -transY);
@@ -104,7 +103,6 @@ public class BoardView extends View {
     private void drawGrid(Canvas canvas) {
         final float maxCoord = maxCoord();
         canvas.drawRect(0, 0, maxCoord, maxCoord, boardPaint);
-        // WRITE YOUR CODE HERE ...
         gridPaint.setColor(Color.BLACK);
         gridPaint.setStrokeWidth(3);
 
@@ -117,11 +115,11 @@ public class BoardView extends View {
         int height = canvas.getHeight();
 
         int gridSize = 9;
-        int gridSpacing = Math.min(width, height) / gridSize;
+        int gridSpacing = height / gridSize;
         int boardSize = gridSize * gridSpacing;
 
-        int xOffset = (width - boardSize);
-        int yOffset = (height - boardSize);
+        int xOffset = (width - boardSize)/width;
+        int yOffset = (height - boardSize)/height;
 
         //Vertical Grid-lines
         for (int i = 0; i < gridSize; i++) {
@@ -135,6 +133,7 @@ public class BoardView extends View {
             canvas.drawLine(startX, startY, stopX, stopY, gridPaint);
 
         }
+        //Horizontal
         for (int i = 0; i < gridSize; i++) {
 
             startX = xOffset;
@@ -145,19 +144,15 @@ public class BoardView extends View {
 
             canvas.drawLine(startX, startY, stopX, stopY, gridPaint);
         }
+        Paint gridColor = new Paint();
+        gridColor.setColor(Color.BLACK);
+        gridColor.setStrokeWidth(8);
+        canvas.drawLine(0, maxCoord , maxCoord, maxCoord, gridColor);
+        canvas.drawLine(maxCoord, 0 , maxCoord, maxCoord, gridPaint);
 
-
-        //
     }
 
-    private void drawBorder(Canvas canvas){
-        final float maxCoord = maxCoord();
-        gridPaint.setColor(Color.BLACK);
-        gridPaint.setStrokeWidth(3);
-        canvas.drawLine(0, 0, maxCoord, 0, gridPaint);
-        canvas.drawLine(0, 0, 0, maxCoord, gridPaint);
-       canvas.drawLine(0, maxCoord, maxCoord, maxCoord, gridPaint);
-    }
+
 
     /** Draw all the squares (numbers) of the associated board. */
     private void drawSquares(Canvas canvas) {

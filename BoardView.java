@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -61,6 +62,7 @@ public class BoardView extends View {
     }
 
     private final Paint gridPaint = new Paint();
+
 
 
     /** Create a new board view to be run in the given context. */
@@ -127,10 +129,10 @@ public class BoardView extends View {
             startX = xOffset + i*gridSpacing;
             startY = yOffset;
 
-            stopX = startX;
+           // stopX = startX;
             stopY = startY + boardSize;
 
-            canvas.drawLine(startX, startY, stopX, stopY, gridPaint);
+            canvas.drawLine(startX, startY, startX, stopY, gridPaint);
 
         }
         //Horizontal
@@ -140,9 +142,9 @@ public class BoardView extends View {
             startY = yOffset + i*gridSpacing;
 
             stopX = startX + boardSize;
-            stopY = startY;
+            //stopY = startY;
 
-            canvas.drawLine(startX, startY, stopX, stopY, gridPaint);
+            canvas.drawLine(startX, startY, stopX, startY, gridPaint);
         }
         Paint gridColor = new Paint();
         gridColor.setColor(Color.BLACK);
@@ -158,6 +160,24 @@ public class BoardView extends View {
     private void drawSquares(Canvas canvas) {
         // WRITE YOUR CODE HERE ...
         //
+        Paint textColor = new Paint();
+        textColor.setColor(Color.BLACK);
+        textColor.setTextSize(50);
+        int gridSpacing = getHeight()/ 9;
+        int boardSize = 9 * gridSpacing;
+
+        int xOffset = (getWidth() - boardSize)/(getWidth()/2);
+        int yOffset = (getHeight() - boardSize)/(getHeight()/2);
+
+        for(int i = 0;i< board.grid.length; i++){
+            for(int j = 0; j<board.grid.length; j++){
+                if(board.grid[i][j] != -1){
+                    canvas.drawText(Integer.toString(board.grid[i][j]),(yOffset + j*gridSpacing)+20,(xOffset + (i+1)*gridSpacing)-15,textColor);
+                }
+            }
+        }
+
+
     }
 
     /** Overridden here to detect tapping on the board and

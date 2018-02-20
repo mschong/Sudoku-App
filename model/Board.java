@@ -10,14 +10,14 @@ public class Board {
 
 
     public int[][] grid;
+    public boolean[][] prefilled;
     public boolean win;
-    public boolean inRow, inCol, inSquare;
+    public boolean inRow, inCol, inSquare, isPrefilled;
 
     /** Create a new board of the given size. */
     public Board(int size) {
         this.size = size;
 
-        // WRITE YOUR CODE HERE ...
         initializeGrid();
         addRandomNumbers(17);
     }
@@ -26,25 +26,23 @@ public class Board {
 
     public void initializeGrid() {
         grid = new int[size][size];
+        prefilled = new boolean[size][size];
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid.length; j++) {
                 grid[i][j] = 0;
+                prefilled[i][j] = false;
             }
         }
 
     }
 
     public void insertNumber(int x, int y, int n) {
-        // while game is not over
-        //while (!win) {
             // check if valid number
             if (!checkNum(x, y, n)) {
                 System.out.println("Not a valid number");
-                //continue;
             }
             System.out.println("Valid number, inserting " + n);
             checkWin();
-     //   }
         printGrid();
 
     }
@@ -54,11 +52,6 @@ public class Board {
         if (n > 9 || x < 0 || y < 0 || x > 8 || y > 8) {
             return false;
         }
-        // check if current space is not part of the pre-filled values
-        /**if(grid[y][x] > 0) {
-            System.out.println("Already filled with pre-values");
-            return false;
-        }**/
 
         // check column
         if (!checkColumn(x, n)) {
@@ -136,7 +129,9 @@ public class Board {
         }
     }
 
-
+    private void insertPrefilled(int x, int y){
+        prefilled[y][x] = true;
+    }
 
     private void addRandomNumbers(int numbers) {
         Random rand = new Random();
@@ -151,6 +146,7 @@ public class Board {
         if (!checkNum(randomX, randomY, randomN)) {
             addRandomNumbers(numbers);
         } else {
+            insertPrefilled(randomX, randomY);
             addRandomNumbers(numbers-1);
         }
     }
@@ -177,7 +173,11 @@ public class Board {
     }
 
     public void insertZero(int x, int y){
-        grid[y][x] = 0;
+        if(!prefilled[y][x]) {
+            grid[y][x] = 0;
+        } else{
+            isPrefilled = true;
+        }
     }
 
     /** Return the size of this board. */
@@ -185,4 +185,5 @@ public class Board {
     	return size;
     }
 
+    // WRITE YOUR CODE HERE ..
 }

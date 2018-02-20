@@ -112,13 +112,13 @@ public class BoardView extends View {
         blackPaint.setColor(Color.BLACK);
         blackPaint.setStrokeWidth(5);
 
-        //top line
+        //Top Line
         canvas.drawLine(0,0,maxCoord,0, blackPaint);
-        //bottom line
+        //Bottom Line
         canvas.drawLine(0,maxCoord-5,maxCoord,maxCoord, blackPaint);
-        //left line
+        //Left Line
         canvas.drawLine(0, maxCoord, 0,0, blackPaint);
-        //right line
+        //Right Line
         canvas.drawLine(maxCoord,0,maxCoord,maxCoord, blackPaint);
 
         //Vertical bold lines
@@ -146,9 +146,13 @@ public class BoardView extends View {
     private void drawSquares(Canvas canvas) {
         // WRITE YOUR CODE HERE ...
         //
+        Paint prefilledColor = new Paint();
         Paint textColor = new Paint();
-        textColor.setColor(Color.BLACK);
+        textColor.setColor(Color.BLUE);
         textColor.setTextSize(50);
+        prefilledColor.setColor(Color.BLACK);
+        prefilledColor.setTextSize(50);
+
         int gridSpacing = getHeight()/ 9;
         int boardSize = 9 * gridSpacing;
 
@@ -157,7 +161,9 @@ public class BoardView extends View {
 
         for(int i = 0;i< board.grid.length; i++){
             for(int j = 0; j<board.grid.length; j++){
-                if(board.grid[i][j] != 0){
+                if(board.grid[i][j] != 0 && board.prefilled[i][j]==true){
+                    canvas.drawText(Integer.toString(board.grid[i][j]),(startY + j*gridSpacing)+20,(startX + (i+1)*gridSpacing)-15,prefilledColor);
+                }else if(board.grid[i][j] != 0){
                     canvas.drawText(Integer.toString(board.grid[i][j]),(startY + j*gridSpacing)+20,(startX + (i+1)*gridSpacing)-15,textColor);
                 }
             }

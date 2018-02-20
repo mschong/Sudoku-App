@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -61,7 +60,7 @@ public class BoardView extends View {
         boardPaint.setAlpha(80); // semi transparent
     }
 
-    private final Paint gridPaint = new Paint();
+    private final Paint paint = new Paint();
 
 
 
@@ -105,52 +104,38 @@ public class BoardView extends View {
     private void drawGrid(Canvas canvas) {
         final float maxCoord = maxCoord();
         canvas.drawRect(0, 0, maxCoord, maxCoord, boardPaint);
-        gridPaint.setColor(Color.BLACK);
-        gridPaint.setStrokeWidth(3);
+        Paint grayPaint = new Paint();
+        grayPaint.setColor(Color.GRAY);
 
-        float startX;
-        float stopX;
-        float startY;
-        float stopY;
+        Paint blackPaint = new Paint();
+        blackPaint.setColor(Color.BLACK);
+        blackPaint.setStrokeWidth(5);
+        
+        //top line
+        canvas.drawLine(0,0,maxCoord,0, blackPaint);
+        //bottom line
+        canvas.drawLine(0,maxCoord-5,maxCoord,maxCoord, blackPaint);
+        //left line
+        canvas.drawLine(0, maxCoord, 0,0, blackPaint);
+        //right line
+        canvas.drawLine(maxCoord,0,maxCoord,maxCoord, blackPaint);
 
-        int width = canvas.getWidth();
-        int height = canvas.getHeight();
+        //Vertical bold lines
+        canvas.drawLine(maxCoord/3,0,maxCoord/3,maxCoord,blackPaint);
+        canvas.drawLine((maxCoord/3)*2, 0, (maxCoord/3)*2,maxCoord,blackPaint);
+        //Horizontal bold lines
+        canvas.drawLine(0,maxCoord/3,maxCoord,maxCoord/3,blackPaint);
+        canvas.drawLine(0,(maxCoord/3)*2,maxCoord,(maxCoord/3)*2, blackPaint);
 
-        int gridSize = 9;
-        int gridSpacing = height / gridSize;
-        int boardSize = gridSize * gridSpacing;
-
-        int xOffset = (width - boardSize)/width;
-        int yOffset = (height - boardSize)/height;
-
-        //Vertical Grid-lines
-        for (int i = 0; i < gridSize; i++) {
-
-            startX = xOffset + i*gridSpacing;
-            startY = yOffset;
-
-           // stopX = startX;
-            stopY = startY + boardSize;
-
-            canvas.drawLine(startX, startY, startX, stopY, gridPaint);
-
+        //Vertical
+        for (int i = 1; i < boardSize; i++){
+            canvas.drawLine((maxCoord/boardSize)*i,0, (maxCoord/boardSize)*i, maxCoord, grayPaint);
         }
+
         //Horizontal
-        for (int i = 0; i < gridSize; i++) {
-
-            startX = xOffset;
-            startY = yOffset + i*gridSpacing;
-
-            stopX = startX + boardSize;
-            //stopY = startY;
-
-            canvas.drawLine(startX, startY, stopX, startY, gridPaint);
+        for(int i = 1; i < boardSize; i++){
+            canvas.drawLine(0,(maxCoord/boardSize)*i,maxCoord,(maxCoord/boardSize)*i,grayPaint);
         }
-        Paint gridColor = new Paint();
-        gridColor.setColor(Color.BLACK);
-        gridColor.setStrokeWidth(8);
-        canvas.drawLine(0, maxCoord , maxCoord, maxCoord, gridColor);
-        canvas.drawLine(maxCoord, 0 , maxCoord, maxCoord, gridPaint);
 
     }
 
@@ -166,19 +151,20 @@ public class BoardView extends View {
         int gridSpacing = getHeight()/ 9;
         int boardSize = 9 * gridSpacing;
 
-        int xOffset = (getWidth() - boardSize)/(getWidth()/2);
-        int yOffset = (getHeight() - boardSize)/(getHeight()/2);
+        int startX = (getWidth() - boardSize)/(getWidth()/2);
+        int startY = (getHeight() - boardSize)/(getHeight()/2);
 
         for(int i = 0;i< board.grid.length; i++){
             for(int j = 0; j<board.grid.length; j++){
                 if(board.grid[i][j] != -1){
-                    canvas.drawText(Integer.toString(board.grid[i][j]),(yOffset + j*gridSpacing)+20,(xOffset + (i+1)*gridSpacing)-15,textColor);
+                    canvas.drawText(Integer.toString(board.grid[i][j]),(startY + j*gridSpacing)+20,(startX + (i+1)*gridSpacing)-15,textColor);
                 }
             }
         }
 
 
     }
+
 
     /** Overridden here to detect tapping on the board and
      * to notify the selected square if exists. */

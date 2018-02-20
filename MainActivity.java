@@ -1,5 +1,6 @@
 package edu.utep.cs.cs4330.sudoku;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -47,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
     /** Width of number buttons automatically calculated from the screen size. */
     private static int buttonWidth;
 
+    private int squareX;
+    private int squareY;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,9 +73,11 @@ public class MainActivity extends AppCompatActivity {
 
     /** Callback to be invoked when the new button is tapped. */
     public void newClicked(View view) {
-        // WRITE YOUR CODE HERE ...
-        //
-        toast("New clicked.");
+        //Restart Activity
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+        toast("New game.");
     }
 
     /** Callback to be invoked when a number button is tapped.
@@ -80,9 +86,28 @@ public class MainActivity extends AppCompatActivity {
      *          or 0 for the delete button.
      */
     public void numberClicked(int n) {
-        // WRITE YOUR CODE HERE ...
-        //
-        toast("Number clicked: " + n);
+        //Gets selected square's coords and inserts number
+        if(board.grid[squareY][squareX] == 0){
+            board.insertNumber(squareX, squareY, n);
+            if(board.inSquare){
+                toast("Number already in 3x3 square");
+            }
+            else if(board.inRow){
+                toast("Number already in row");
+            }
+            else if(board.inCol){
+                toast("Number already in column");
+            }
+
+            boardView.postInvalidate();
+        } else if(board.grid[squareY][squareX] != 0 && n==0){
+            board.insertZero(squareX,squareY);
+            boardView.postInvalidate();
+        }
+        else{
+            toast("Space is taken.");
+        }
+       // toast("Number clicked: " + n);
     }
 
     /**
@@ -92,8 +117,8 @@ public class MainActivity extends AppCompatActivity {
      * @param x 0-based row index of the selected square.
      */
     private void squareSelected(int x, int y) {
-        // WRITE YOUR CODE HERE ...
-        //
+        squareX = x;
+        squareY = y;
         toast(String.format("Square selected: (%d, %d)", x, y));
     }
 

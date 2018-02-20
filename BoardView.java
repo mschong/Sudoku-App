@@ -64,6 +64,7 @@ public class BoardView extends View {
 
 
 
+
     /** Create a new board view to be run in the given context. */
     public BoardView(Context context) { //@cons
         this(context, null);
@@ -110,7 +111,7 @@ public class BoardView extends View {
         Paint blackPaint = new Paint();
         blackPaint.setColor(Color.BLACK);
         blackPaint.setStrokeWidth(5);
-        
+
         //top line
         canvas.drawLine(0,0,maxCoord,0, blackPaint);
         //bottom line
@@ -156,7 +157,7 @@ public class BoardView extends View {
 
         for(int i = 0;i< board.grid.length; i++){
             for(int j = 0; j<board.grid.length; j++){
-                if(board.grid[i][j] != -1){
+                if(board.grid[i][j] != 0){
                     canvas.drawText(Integer.toString(board.grid[i][j]),(startY + j*gridSpacing)+20,(startX + (i+1)*gridSpacing)-15,textColor);
                 }
             }

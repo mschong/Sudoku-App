@@ -1,8 +1,12 @@
 package edu.utep.cs.cs4330.sudoku;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -74,10 +78,28 @@ public class MainActivity extends AppCompatActivity {
     /** Callback to be invoked when the new button is tapped. */
     public void newClicked(View view) {
         //Restart Activity
-        Intent intent = getIntent();
-        finish();
-        startActivity(intent);
-        toast("New game.");
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Are you sure you want to start a new game?");
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
+                toast("New game.");
+                dialogInterface.cancel();
+            }
+        });
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     /** Callback to be invoked when a number button is tapped.
@@ -91,17 +113,22 @@ public class MainActivity extends AppCompatActivity {
             board.insertNumber(squareX, squareY, n);
             if(board.inSquare){
                 toast("Number already in 3x3 square");
+                board.inSquare = false;
             }
             else if(board.inRow){
                 toast("Number already in row");
+                board.inRow = false;
             }
             else if(board.inCol){
                 toast("Number already in column");
+                board.inCol = false;
             }
 
             boardView.postInvalidate();
         } else if(board.grid[squareY][squareX] != 0 && n==0){
             board.insertZero(squareX,squareY);
+            if(board.isPrefilled)
+                toast("Can't delete prefilled value");
             boardView.postInvalidate();
         }
         else{
@@ -124,7 +151,31 @@ public class MainActivity extends AppCompatActivity {
 
     /** Show a toast message. */
     private void toast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        Toast toast=Toast.makeText(this, msg, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.TOP,0,130);
+        toast.show();
+
+
+    }
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Are you sure you want to exit?");
+        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                MainActivity.this.finish();
+            }
+        });
+        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     /** Set the width of the given button calculated from the screen size. */

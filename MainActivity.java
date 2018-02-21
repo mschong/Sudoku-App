@@ -3,6 +3,9 @@ package edu.utep.cs.cs4330.sudoku;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
 
     private int squareX;
     private int squareY;
+    SoundPool sound;
+    int wrong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
             numberButtons.add(button);
             setButtonWidth(button);
         }
+        sound = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
+        wrong = sound.load(this,R.raw.no,1);
     }
 
     /** Callback to be invoked when the new button is tapped. */
@@ -108,18 +115,23 @@ public class MainActivity extends AppCompatActivity {
      *          or 0 for the delete button.
      */
     public void numberClicked(int n) {
+        //MediaPlayer wrong = MediaPlayer.create(getApplicationContext(),R.raw.no);
+
         //Gets selected square's coords and inserts number
         if(board.grid[squareY][squareX] == 0){
             board.insertNumber(squareX, squareY, n);
             if(board.inSquare){
+               // sound.play(wrong,1,1,1,0,1);
                 toast("Number already in 3x3 square");
                 board.inSquare = false;
             }
             else if(board.inRow){
+                //wrong.start();
                 toast("Number already in row");
                 board.inRow = false;
             }
             else if(board.inCol){
+                //wrong.start();
                 toast("Number already in column");
                 board.inCol = false;
             }
@@ -146,6 +158,8 @@ public class MainActivity extends AppCompatActivity {
     private void squareSelected(int x, int y) {
         squareX = x;
         squareY = y;
+        sound.play(wrong,1,1,1,0,1);
+
         toast(String.format("Square selected: (%d, %d)", x, y));
     }
 

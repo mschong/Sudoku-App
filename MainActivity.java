@@ -37,7 +37,7 @@ import edu.utep.cs.cs4330.sudoku.model.Board;
  *  }
  * </pre>
  *
- * @author Yoonsik Cheon
+ * @author Yoonsik Cheon, Marina Chong, Jessica Dozal
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -57,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
     private int squareX;
     private int squareY;
-    SoundPool sound;
-    int wrong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,19 +76,18 @@ public class MainActivity extends AppCompatActivity {
             numberButtons.add(button);
             setButtonWidth(button);
         }
-        sound = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
-        wrong = sound.load(this,R.raw.no,1);
     }
 
     /** Callback to be invoked when the new button is tapped. */
     public void newClicked(View view) {
-        //Restart Activity
 
+        //Create notification to ask user if they are sure about creating new game
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setMessage("Are you sure you want to start a new game?");
         alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                //Restart Activity
                 Intent intent = getIntent();
                 finish();
                 startActivity(intent);
@@ -115,35 +112,24 @@ public class MainActivity extends AppCompatActivity {
      *          or 0 for the delete button.
      */
     public void numberClicked(int n) {
-        //MediaPlayer wrong = MediaPlayer.create(getApplicationContext(),R.raw.no);
-
         //Gets selected square's coords and inserts number
-        if(board.grid[squareY][squareX] == 0){
+        if(board.getSquare(squareX,squareY).getValue() == 0){
             board.insertNumber(squareX, squareY, n);
-            if(board.inSquare){
-               // sound.play(wrong,1,1,1,0,1);
-                toast("Number already in 3x3 square");
-                board.inSquare = false;
+            //if game is won, display winning message
+            if(board.win){
+                boardView.win = true;
+                toast("YOU WIN!");
             }
-            else if(board.inRow){
-                //wrong.start();
-                toast("Number already in row");
-                board.inRow = false;
-            }
-            else if(board.inCol){
-                //wrong.start();
-                toast("Number already in column");
-                board.inCol = false;
-            }
-
             boardView.postInvalidate();
-        } else if(board.grid[squareY][squareX] != 0 && n==0){
+            //Delete a number that is not from the prefilled
+        } else if(board.getSquare(squareX,squareY).getValue() != 0 && n==0){
             board.insertZero(squareX,squareY);
             if(board.isPrefilled)
                 toast("Can't delete prefilled value");
             boardView.postInvalidate();
         }
         else{
+            //Can't enter a number where there is a number already
             toast("Space is taken.");
         }
        // toast("Number clicked: " + n);
@@ -156,11 +142,11 @@ public class MainActivity extends AppCompatActivity {
      * @param x 0-based row index of the selected square.
      */
     private void squareSelected(int x, int y) {
-        squareX = x;
-        squareY = y;
-        sound.play(wrong,1,1,1,0,1);
+        //Get coordinates of square
+        squareX = y;
+        squareY = x;
 
-        toast(String.format("Square selected: (%d, %d)", x, y));
+        toast(String.format("Square selected: (%d, %d)", y, x));
     }
 
     /** Show a toast message. */

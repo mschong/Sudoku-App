@@ -20,7 +20,7 @@ import edu.utep.cs.cs4330.sudoku.model.Board;
  * the <code>onDraw()</code> method.
  *
  * @see edu.utep.cs.cs4330.sudoku.model.Board
- * @author cheon
+ * @author Dr. Yoonsik Cheon, Marina Chong, Jessica Dozal
  */
 public class BoardView extends View {
 
@@ -53,15 +53,9 @@ public class BoardView extends View {
     private float transY;
 
     /** Paint to draw the background of the grid. */
-    private final Paint boardPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    {
-        int boardColor = Color.rgb(201, 186, 145);
-        boardPaint.setColor(boardColor);
-        boardPaint.setAlpha(80); // semi transparent
-    }
+    private Paint boardPaint;
 
-    private final Paint paint = new Paint();
-
+    boolean win;
 
 
 
@@ -95,7 +89,25 @@ public class BoardView extends View {
         super.onDraw(canvas);
         canvas.translate(transX, transY);
         if (board != null) {
-            drawGrid(canvas);
+            //If game is not won, it will display regular colored board
+            if(!win) {
+                boardPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                {
+                    int boardColor = Color.rgb(201, 186, 145);
+                    boardPaint.setColor(boardColor);
+                    boardPaint.setAlpha(80); // semi transparent
+                }
+                drawGrid(canvas);
+            } else{
+                //If game is won. board will change to color green to indicate the game has been won.
+                boardPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                {
+                    int boardColor = Color.rgb(178, 255, 102);
+                    boardPaint.setColor(boardColor);
+                    boardPaint.setAlpha(80); // semi transparent
+                }
+                drawGrid(canvas);
+            }
             drawSquares(canvas);
         }
         canvas.translate(-transX, -transY);
@@ -105,9 +117,10 @@ public class BoardView extends View {
     private void drawGrid(Canvas canvas) {
         final float maxCoord = maxCoord();
         canvas.drawRect(0, 0, maxCoord, maxCoord, boardPaint);
+        //Paint for 9x9 grid
         Paint grayPaint = new Paint();
         grayPaint.setColor(Color.GRAY);
-
+        //Paint for 3x3 subgrid borders
         Paint blackPaint = new Paint();
         blackPaint.setColor(Color.BLACK);
         blackPaint.setStrokeWidth(5);
@@ -144,9 +157,9 @@ public class BoardView extends View {
 
     /** Draw all the squares (numbers) of the associated board. */
     private void drawSquares(Canvas canvas) {
-        // WRITE YOUR CODE HERE ...
-        //
+        //Paint for the prefilled numbers
         Paint prefilledColor = new Paint();
+        //Paint for the user added numbers
         Paint textColor = new Paint();
         textColor.setColor(Color.BLUE);
         textColor.setTextSize(50);
@@ -159,18 +172,20 @@ public class BoardView extends View {
         int startX = (getWidth() - boardSize)/(getWidth()/2);
         int startY = (getHeight() - boardSize)/(getHeight()/2);
 
-        for(int i = 0;i< board.grid.length; i++){
-            for(int j = 0; j<board.grid.length; j++){
-                if(board.grid[i][j] != 0 && board.prefilled[i][j]==true){
-                    canvas.drawText(Integer.toString(board.grid[i][j]),(startY + j*gridSpacing)+20,(startX + (i+1)*gridSpacing)-15,prefilledColor);
-                }else if(board.grid[i][j] != 0){
-                    canvas.drawText(Integer.toString(board.grid[i][j]),(startY + j*gridSpacing)+20,(startX + (i+1)*gridSpacing)-15,textColor);
+        for(int i = 0;i< board.size; i++){
+            for(int j = 0; j<board.size; j++){
+                //Check if it's one of the prefilled values
+                if(board.getSquare(i,j).getValue() != 0 && board.getSquare(i,j).getPrefilled()==true){
+                    canvas.drawText(Integer.toString(board.getSquare(i,j).getValue()),(startY + j*gridSpacing)+20,(startX + (i+1)*gridSpacing)-15,prefilledColor);
+                }else if(board.getSquare(i,j).getValue() != 0){
+                    canvas.drawText(Integer.toString(board.getSquare(i,j).getValue()),(startY + j*gridSpacing)+20,(startX + (i+1)*gridSpacing)-15,textColor);
                 }
             }
         }
 
 
     }
+
 
 
     /** Overridden here to detect tapping on the board and
